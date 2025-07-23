@@ -11,8 +11,7 @@ public class InputManager : MonoBehaviour
 
             if (hit.collider != null)
             {
-                //Debug.Log("Clicked on: " + hit.collider.name);
-                hit.collider.gameObject.GetComponent<Card>()?.OnClicked();
+                hit.collider.gameObject.GetComponent<Card>()?.OnCardClicked();
             }
         }
     }

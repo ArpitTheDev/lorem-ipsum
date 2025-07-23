@@ -5,15 +5,20 @@ using UnityEngine;
 
 public class Card : MonoBehaviour
 {
+    public static event Action<Card> OnFlipCompleted;
+
     public SpriteRenderer SR;
     public Sprite CardFolded;
     public Sprite CardUnFolded;
+
+    public float CardFlipAnimDuration;
 
     private void Awake()
     {
         SR.sprite = CardFolded;
     }
-    public void OnClicked()
+
+    public void OnCardClicked()
     {
         Flip();
     }
@@ -29,26 +34,25 @@ public class Card : MonoBehaviour
     {
         if (IsCardUnFolded)
             StartCoroutine(FlipAnimation(CardFolded));
-        IsCardUnFolded = false;
     }
 
     private IEnumerator FlipAnimation(Sprite newSprite)
     {
-        float duration = 0.1f;
-
+        float halfDuration = CardFlipAnimDuration / 2f;
         Vector3 scale = transform.localScale;
-        for (float t = 0; t < duration; t += Time.deltaTime)
+
+        for (float t = 0; t < halfDuration; t += Time.deltaTime)
         {
-            float lerp = 1 - (t / duration);
+            float lerp = 1 - (t / halfDuration);
             transform.localScale = new Vector3(lerp * scale.x, scale.y, scale.z);
             yield return null;
         }
 
         SR.sprite = newSprite;
 
-        for (float t = 0; t < duration; t += Time.deltaTime)
+        for (float t = 0; t < halfDuration; t += Time.deltaTime)
         {
-            float lerp = t / duration;
+            float lerp = t / halfDuration;
             transform.localScale = new Vector3(lerp * scale.x, scale.y, scale.z);
             yield return null;
         }
@@ -56,5 +60,8 @@ public class Card : MonoBehaviour
         transform.localScale = scale;
 
         IsCardUnFolded = !IsCardUnFolded;
+
+        if(IsCardUnFolded)
+            OnFlipCompleted?.Invoke(this);
     }
 }

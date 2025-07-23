@@ -17,6 +17,8 @@ public class CardSpawner : MonoBehaviour
     float CardWidth;     
     float CardHeight;
 
+    public float CardFlipAnimDuration;
+
     void Start()
     {
         CenterSpawner();
@@ -91,6 +93,7 @@ public class CardSpawner : MonoBehaviour
             Card card = Instantiate(cardPrefab, transform);
             card.transform.localPosition = position;
             card.CardUnFolded = cards[i];
+            card.CardFlipAnimDuration = CardFlipAnimDuration;
         }
     }
 }
