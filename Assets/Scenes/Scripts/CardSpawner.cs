@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.U2D;
 
 public class CardSpawner : MonoBehaviour
 {
+    public SpriteAtlas spriteAtlas;
     public Card cardPrefab;
 
     public int rows = 2;
@@ -11,8 +14,8 @@ public class CardSpawner : MonoBehaviour
 
     public float Spacing = 2f;
 
-    public float CardWidth;     
-    public float CardHeight;
+    float CardWidth;     
+    float CardHeight;
 
     void Start()
     {
@@ -34,14 +37,20 @@ public class CardSpawner : MonoBehaviour
     {
         int totalCards = rows * cols;
 
-        // Generate paired IDs and shuffle
-        List<int> ids = new List<int>();
-        for (int i = 0; i < totalCards / 2; i++)
+        // Load all sprites
+        Sprite[] allSprites = new Sprite[spriteAtlas.spriteCount];
+        spriteAtlas.GetSprites(allSprites);
+
+        List<Sprite> cards = new List<Sprite>();
+        for(int i=0; i < totalCards/2;i++)
         {
-            ids.Add(i);
-            ids.Add(i);
+            Sprite sprite = allSprites[Random.Range(0,allSprites.Length)];
+            cards.Add(sprite);
+            cards.Add(sprite);
         }
-        ids = Shuffle(ids);
+
+        // Shuffle cards
+        cards = cards.OrderBy(x => Random.value).ToList();
 
         // Compute total grid size
         float gridWidth = cols * (CardWidth + Spacing) - Spacing;
@@ -81,22 +90,7 @@ public class CardSpawner : MonoBehaviour
 
             Card card = Instantiate(cardPrefab, transform);
             card.transform.localPosition = position;
-            card.CardId = ids[i];
+            card.CardUnFolded = cards[i];
         }
-    }
-
-    List<int> Shuffle(List<int> list)
-    {
-        System.Random rng = new System.Random();
-        int n = list.Count;
-        while (n > 1)
-        {
-            int k = rng.Next(n--); // Pick a random index from 0 to n-1, then decrement n for the next iteration
-            int temp = list[n];
-            list[n] = list[k];
-            list[k] = temp;
-        }
-
-        return list;
     }
 }
