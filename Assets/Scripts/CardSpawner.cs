@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -76,6 +77,8 @@ public class CardSpawner : MonoBehaviour
         }
         else 
         {
+            TotalCards = Data.Rows * Data.Cols;
+
             foreach (var item in Data.CardsState)
             {
                 Card Card = Instantiate(CardPrefab, transform);
