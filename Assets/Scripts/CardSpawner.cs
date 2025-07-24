@@ -82,8 +82,6 @@ public class CardSpawner : MonoBehaviour
              gridHeight / 2f - CardHeight / 2f
         );
 
-        
-
         // Spawn cards
         for (int i = 0; i < totalCards; i++)
         {

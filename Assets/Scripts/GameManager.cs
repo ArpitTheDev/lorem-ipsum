@@ -8,6 +8,10 @@ public class GameManager : MonoBehaviour
     public CardSpawner CardSpawner;
     Queue<Card> CardQueue = new Queue<Card>();
 
+    public int ScoreForMatch;
+    int MatchMultiplyerCounter;
+    int Score;
+
     int MatchCounter;
     void OnEnable()
     {
@@ -40,8 +44,13 @@ public class GameManager : MonoBehaviour
             Destroy(second.gameObject);
 
             MatchCounter++;
+            MatchMultiplyerCounter++;
+
+            Score += ScoreForMatch * MatchMultiplyerCounter;
 
             bool IsGameOver = CheckGameOver();
+
+            Debug.Log(Score);
 
             if (!IsGameOver)
             {
@@ -50,6 +59,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            MatchMultiplyerCounter = 0;
             AudioManager.Instance.PlayMismatch();
 
             first.FlipBack();
