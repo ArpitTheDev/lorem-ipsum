@@ -219,6 +219,7 @@ MonoBehaviour:
   cols: 6
   Spacing: 2
   CardFlipAnimDuration: 0.3
+  SpawnedCards: []
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

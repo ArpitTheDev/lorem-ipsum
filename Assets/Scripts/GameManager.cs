@@ -13,6 +13,69 @@ public class GameManager : MonoBehaviour
     int Score;
 
     int MatchCounter;
+
+    void Start()
+    {
+       CardSpawner.GenerateBoard(LoadProgress()); 
+    }
+
+    void OnApplicationQuit()
+    {
+        if (CardSpawner.SpawnedCards.Count > 0) SaveProgress();
+        else SaveManager.DeleteSave();
+    }
+
+    void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus)
+        {
+            if(CardSpawner.SpawnedCards.Count > 0) SaveProgress(); 
+            else SaveManager.DeleteSave();
+        }
+    }
+
+    void SaveProgress()
+    {
+        SaveData data = new SaveData
+        {
+            Score = Score,
+            MatchCounter = MatchCounter,
+            MatchMultiplierCounter = MatchMultiplyerCounter,
+            Rows = CardSpawner.rows,
+            Cols = CardSpawner.cols,
+            CardSpawnerScaleX = CardSpawner.transform.localScale.x,
+            CardSpawnerScaleY = CardSpawner.transform.localScale.y,
+            CardsState = new List<CardData>()
+        };
+
+        foreach (Card card in CardSpawner.SpawnedCards)
+        {
+            CardData cData = new CardData
+            {
+                CardShownName = card.CardShown.name,
+                CardLocation = card.transform.localPosition
+            };
+            data.CardsState.Add(cData);
+        }
+
+        SaveManager.SaveGame(data);
+    }
+
+    SaveData LoadProgress()
+    {
+        SaveData data = SaveManager.LoadGame();
+        if (data == null)
+            return null;
+
+        Score = data.Score;
+        MatchCounter = data.MatchCounter;
+        MatchMultiplyerCounter = data.MatchMultiplierCounter;
+        CardSpawner.rows = data.Rows;
+        CardSpawner.cols = data.Cols;
+
+        return data;
+    }
+
     void OnEnable()
     {
         Card.OnFlipCompleted += HandleCardFlipped;
@@ -40,6 +103,8 @@ public class GameManager : MonoBehaviour
 
         if (first.CardShown == second.CardShown)
         {
+            CardSpawner.SpawnedCards.Remove(first);
+            CardSpawner.SpawnedCards.Remove(second);
             Destroy(first.gameObject);
             Destroy(second.gameObject);
 
@@ -53,9 +118,7 @@ public class GameManager : MonoBehaviour
             Debug.Log(Score);
 
             if (!IsGameOver)
-            {
                 AudioManager.Instance.PlayMatch();
-            }
         }
         else
         {
@@ -73,6 +136,7 @@ public class GameManager : MonoBehaviour
         {
             //Debug.Log("Game Over");
             AudioManager.Instance.PlayGameOver();
+            SaveManager.DeleteSave();
             return true;
         }
             

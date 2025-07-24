@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.U2D;
+using UnityEngine.UIElements;
 
 public class CardSpawner : MonoBehaviour
 {
@@ -20,14 +22,20 @@ public class CardSpawner : MonoBehaviour
     public float CardFlipAnimDuration;
     int totalCards;
     public int TotalCards => totalCards;
+    public List<Card> SpawnedCards;
 
-    void Start()
+    Sprite CardHidden;
+
+    public void GenerateBoard(SaveData data)
     {
         CenterSpawner();
-        GenerateBoard();
+
         SpriteRenderer sr = cardPrefab.GetComponent<SpriteRenderer>();
         CardWidth = sr.bounds.size.x;
         CardHeight = sr.bounds.size.y;
+
+        GenerateCards(data);
+
     }
 
     void CenterSpawner()
@@ -36,27 +44,50 @@ public class CardSpawner : MonoBehaviour
         transform.position = new Vector3(camPos.x, camPos.y, 0f);
     }
 
-
-    void GenerateBoard()
+    void GenerateCards(SaveData data) 
     {
-        totalCards = rows * cols;
-
-        // Load all sprites
         Sprite[] allSprites = new Sprite[spriteAtlas.spriteCount];
         spriteAtlas.GetSprites(allSprites);
-        Sprite CardHidden = allSprites.FirstOrDefault(s => s.name.Contains("CardHidden"));
-        Sprite[] CardShownSprites = allSprites.Where(s => !s.name.Contains("CardHidden")).ToArray();
+        CardHidden = allSprites.FirstOrDefault(s => s.name.Contains("CardHidden"));
 
-        List<Sprite> cards = new List<Sprite>();
-        for(int i=0; i < totalCards/2;i++)
+        if (data == null)
         {
-            Sprite sprite = CardShownSprites[Random.Range(0, CardShownSprites.Length)];
-            cards.Add(sprite);
-            cards.Add(sprite);
-        }
+            totalCards = rows * cols;
 
-        // Shuffle cards
-        cards = cards.OrderBy(x => Random.value).ToList();
+            Sprite[] CardShownSprites = allSprites.Where(s => !s.name.Contains("CardHidden")).ToArray();
+
+            List<Sprite> cards = new List<Sprite>();
+            for (int i = 0; i < totalCards / 2; i++)
+            {
+                Sprite sprite = CardShownSprites[Random.Range(0, CardShownSprites.Length)];
+                cards.Add(sprite);
+                cards.Add(sprite);
+            }
+
+            // Shuffle cards
+            cards = cards.OrderBy(x => Random.value).ToList();
+
+            PlaceCardsOnBoard(cards);
+        }
+        else 
+        {
+            foreach (var item in data.CardsState)
+            {
+                Card card = Instantiate(cardPrefab, transform);
+                card.transform.localPosition = item.CardLocation;
+                card.CardHidden = CardHidden;
+                card.CardShown = allSprites.FirstOrDefault(s => s.name.Contains(item.CardShownName));
+                card.CardFlipAnimDuration = CardFlipAnimDuration;
+
+                SpawnedCards.Add(card);
+            }
+            transform.localScale = new Vector3(data.CardSpawnerScaleX, data.CardSpawnerScaleY, 1);
+        }
+    }
+
+    void PlaceCardsOnBoard(List<Sprite> cards)
+    {
+       
 
         // Compute total grid size
         float gridWidth = cols * (CardWidth + Spacing) - Spacing;
@@ -99,6 +130,7 @@ public class CardSpawner : MonoBehaviour
             card.CardHidden = CardHidden;
             card.CardShown = cards[i];
             card.CardFlipAnimDuration = CardFlipAnimDuration;
+            SpawnedCards.Add(card);
         }
     }
 }
