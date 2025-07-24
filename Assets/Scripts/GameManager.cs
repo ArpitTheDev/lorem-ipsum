@@ -5,7 +5,10 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public CardSpawner CardSpawner;
     Queue<Card> CardQueue = new Queue<Card>();
+
+    int MatchCounter;
     void OnEnable()
     {
         Card.OnFlipCompleted += HandleCardFlipped;
@@ -31,15 +34,38 @@ public class GameManager : MonoBehaviour
         Card first = CardQueue.Dequeue();
         Card second = CardQueue.Dequeue();
 
-        if (first.CardUnFolded == second.CardUnFolded)
+        if (first.CardShown == second.CardShown)
         {
-           Destroy(first.gameObject);
-           Destroy(second.gameObject);
+            Destroy(first.gameObject);
+            Destroy(second.gameObject);
+
+            MatchCounter++;
+
+            bool IsGameOver = CheckGameOver();
+
+            if (!IsGameOver)
+            {
+                AudioManager.Instance.PlayMatch();
+            }
         }
         else
         {
+            AudioManager.Instance.PlayMismatch();
+
             first.FlipBack();
             second.FlipBack();
         }
+    }
+
+    bool CheckGameOver() 
+    {
+        if (MatchCounter == CardSpawner.TotalCards / 2) 
+        {
+            //Debug.Log("Game Over");
+            AudioManager.Instance.PlayGameOver();
+            return true;
+        }
+            
+        return false;
     }
 }

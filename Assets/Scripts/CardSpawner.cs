@@ -18,6 +18,8 @@ public class CardSpawner : MonoBehaviour
     float CardHeight;
 
     public float CardFlipAnimDuration;
+    int totalCards;
+    public int TotalCards => totalCards;
 
     void Start()
     {
@@ -37,16 +39,18 @@ public class CardSpawner : MonoBehaviour
 
     void GenerateBoard()
     {
-        int totalCards = rows * cols;
+        totalCards = rows * cols;
 
         // Load all sprites
         Sprite[] allSprites = new Sprite[spriteAtlas.spriteCount];
         spriteAtlas.GetSprites(allSprites);
+        Sprite CardHidden = allSprites.FirstOrDefault(s => s.name.Contains("CardHidden"));
+        Sprite[] CardShownSprites = allSprites.Where(s => !s.name.Contains("CardHidden")).ToArray();
 
         List<Sprite> cards = new List<Sprite>();
         for(int i=0; i < totalCards/2;i++)
         {
-            Sprite sprite = allSprites[Random.Range(0,allSprites.Length)];
+            Sprite sprite = CardShownSprites[Random.Range(0, CardShownSprites.Length)];
             cards.Add(sprite);
             cards.Add(sprite);
         }
@@ -78,6 +82,8 @@ public class CardSpawner : MonoBehaviour
              gridHeight / 2f - CardHeight / 2f
         );
 
+        
+
         // Spawn cards
         for (int i = 0; i < totalCards; i++)
         {
@@ -92,7 +98,8 @@ public class CardSpawner : MonoBehaviour
 
             Card card = Instantiate(cardPrefab, transform);
             card.transform.localPosition = position;
-            card.CardUnFolded = cards[i];
+            card.CardHidden = CardHidden;
+            card.CardShown = cards[i];
             card.CardFlipAnimDuration = CardFlipAnimDuration;
         }
     }

@@ -8,14 +8,14 @@ public class Card : MonoBehaviour
     public static event Action<Card> OnFlipCompleted;
 
     public SpriteRenderer SR;
-    public Sprite CardFolded;
-    public Sprite CardUnFolded;
+    public Sprite CardHidden;
+    public Sprite CardShown;
 
     public float CardFlipAnimDuration;
 
     private void Awake()
     {
-        SR.sprite = CardFolded;
+        SR.sprite = CardHidden;
     }
 
     public void OnCardClicked()
@@ -24,20 +24,24 @@ public class Card : MonoBehaviour
     }
 
     public bool IsCardUnFolded;
+    public bool IsFlipAnimating;
+
     public void Flip()
     {
-        if (!IsCardUnFolded)
-            StartCoroutine(FlipAnimation(CardUnFolded));
+        if (!IsCardUnFolded && !IsFlipAnimating)
+            StartCoroutine(FlipAnimation(CardShown));
     }
 
     public void FlipBack()
     {
-        if (IsCardUnFolded)
-            StartCoroutine(FlipAnimation(CardFolded));
+        if (IsCardUnFolded && !IsFlipAnimating)
+            StartCoroutine(FlipAnimation(CardHidden));
     }
 
     private IEnumerator FlipAnimation(Sprite newSprite)
     {
+        AudioManager.Instance.PlayFlip();
+        IsFlipAnimating = true;
         float halfDuration = CardFlipAnimDuration / 2f;
         Vector3 scale = transform.localScale;
 
@@ -60,8 +64,11 @@ public class Card : MonoBehaviour
         transform.localScale = scale;
 
         IsCardUnFolded = !IsCardUnFolded;
+        IsFlipAnimating = false;
 
-        if(IsCardUnFolded)
+        if (IsCardUnFolded)
             OnFlipCompleted?.Invoke(this);
+
+        
     }
 }
