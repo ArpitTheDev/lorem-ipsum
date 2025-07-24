@@ -10,11 +10,12 @@ public class CardSpawner : MonoBehaviour
 {
     public SpriteAtlas spriteAtlas;
     public Card cardPrefab;
-
+    [HideInInspector]
     public int rows = 2;
+    [HideInInspector]
     public int cols = 2;
 
-    public float Spacing = 2f;
+    public float Spacing = 1f;
 
     float CardWidth;     
     float CardHeight;
@@ -52,6 +53,10 @@ public class CardSpawner : MonoBehaviour
 
         if (data == null)
         {
+            if (GridSelectMenu.CurrentGridSelected == GridSelection.TwoCrossTwo) { rows = 2; cols = 2; }
+            if (GridSelectMenu.CurrentGridSelected == GridSelection.TwoCrossThree) { rows = 2; cols = 3; }
+            if (GridSelectMenu.CurrentGridSelected == GridSelection.FiveCrossSix) { rows = 5; cols = 6; }
+
             totalCards = rows * cols;
 
             Sprite[] CardShownSprites = allSprites.Where(s => !s.name.Contains("CardHidden")).ToArray();
@@ -97,8 +102,8 @@ public class CardSpawner : MonoBehaviour
         float screenHeight = Camera.main.orthographicSize * 2f;
         float screenWidth = screenHeight * Camera.main.aspect;
 
-        float maxWidth = screenWidth * 0.9f;
-        float maxHeight = screenHeight * 0.9f;
+        float maxWidth = screenWidth * 0.8f;
+        float maxHeight = screenHeight * 0.8f;
 
         // Calculate scale factor to fit within screen
         float scaleX = maxWidth / gridWidth;

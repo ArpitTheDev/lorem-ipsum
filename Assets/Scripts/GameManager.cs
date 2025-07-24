@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,9 +12,15 @@ public class GameManager : MonoBehaviour
 
     int MatchCounter;
 
+    public GamePlayUI GamePlayUI;
+    public GameOverUI GameOverUI;
+
     void Start()
     {
-       CardSpawner.GenerateBoard(LoadProgress()); 
+       if(MainMenu.CurrentGameStateSelected == GameState.OldGame)
+            CardSpawner.GenerateBoard(LoadProgress()); 
+       else
+            CardSpawner.GenerateBoard(null);
     }
 
     void OnApplicationQuit()
@@ -68,6 +72,7 @@ public class GameManager : MonoBehaviour
             return null;
 
         Score = data.Score;
+        GamePlayUI.SetScoreText(Score);
         MatchCounter = data.MatchCounter;
         MatchMultiplyerCounter = data.MatchMultiplierCounter;
         CardSpawner.rows = data.Rows;
@@ -105,6 +110,7 @@ public class GameManager : MonoBehaviour
         {
             CardSpawner.SpawnedCards.Remove(first);
             CardSpawner.SpawnedCards.Remove(second);
+
             Destroy(first.gameObject);
             Destroy(second.gameObject);
 
@@ -112,6 +118,8 @@ public class GameManager : MonoBehaviour
             MatchMultiplyerCounter++;
 
             Score += ScoreForMatch * MatchMultiplyerCounter;
+
+            GamePlayUI.SetScoreText(Score);
 
             bool IsGameOver = CheckGameOver();
 
@@ -134,9 +142,13 @@ public class GameManager : MonoBehaviour
     {
         if (MatchCounter == CardSpawner.TotalCards / 2) 
         {
-            //Debug.Log("Game Over");
             AudioManager.Instance.PlayGameOver();
             SaveManager.DeleteSave();
+
+            GamePlayUI.gameObject.SetActive(false);
+            GameOverUI.gameObject.SetActive(true);
+
+            GameOverUI.SetScoreText(Score);
             return true;
         }
             
