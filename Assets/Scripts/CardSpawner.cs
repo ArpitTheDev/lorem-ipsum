@@ -8,12 +8,12 @@ using UnityEngine.UIElements;
 
 public class CardSpawner : MonoBehaviour
 {
-    public SpriteAtlas spriteAtlas;
-    public Card cardPrefab;
+    public SpriteAtlas SpriteAtlas;
+    public Card CardPrefab;
     [HideInInspector]
-    public int rows = 2;
+    public int Rows = 2;
     [HideInInspector]
-    public int cols = 2;
+    public int Cols = 2;
 
     public float Spacing = 1f;
 
@@ -21,121 +21,124 @@ public class CardSpawner : MonoBehaviour
     float CardHeight;
 
     public float CardFlipAnimDuration;
-    int totalCards;
-    public int TotalCards => totalCards;
+
+    public int TotalCards { get; set; }
     public List<Card> SpawnedCards;
 
     Sprite CardHidden;
 
-    public void GenerateBoard(SaveData data)
+    public void GenerateBoard(SaveData Data)
     {
         CenterSpawner();
 
-        SpriteRenderer sr = cardPrefab.GetComponent<SpriteRenderer>();
-        CardWidth = sr.bounds.size.x;
-        CardHeight = sr.bounds.size.y;
+        SpriteRenderer SR = CardPrefab.GetComponent<SpriteRenderer>();
+        CardWidth = SR.bounds.size.x;
+        CardHeight = SR.bounds.size.y;
 
-        GenerateCards(data);
+        GenerateCards(Data);
 
     }
 
     void CenterSpawner()
     {
-        Vector3 camPos = Camera.main.transform.position;
-        transform.position = new Vector3(camPos.x, camPos.y, 0f);
+        Vector3 CamPos = Camera.main.transform.position;
+        transform.position = new Vector3(CamPos.x, CamPos.y, 0f);
     }
 
-    void GenerateCards(SaveData data) 
+    void GenerateCards(SaveData Data) 
     {
-        Sprite[] allSprites = new Sprite[spriteAtlas.spriteCount];
-        spriteAtlas.GetSprites(allSprites);
-        CardHidden = allSprites.FirstOrDefault(s => s.name.Contains("CardHidden"));
+        Sprite[] AllSprites = new Sprite[SpriteAtlas.spriteCount];
+        SpriteAtlas.GetSprites(AllSprites);
+        CardHidden = AllSprites.FirstOrDefault(s => s.name.Contains("CardHidden"));
 
-        if (data == null)
+        if (Data == null)
         {
-            if (GridSelectMenu.CurrentGridSelected == GridSelection.TwoCrossTwo) { rows = 2; cols = 2; }
-            if (GridSelectMenu.CurrentGridSelected == GridSelection.TwoCrossThree) { rows = 2; cols = 3; }
-            if (GridSelectMenu.CurrentGridSelected == GridSelection.FiveCrossSix) { rows = 5; cols = 6; }
+            if (GridSelectMenu.CurrentGridSelected == GridSelection.TwoCrossTwo) { Rows = 2; Cols = 2; }
+            if (GridSelectMenu.CurrentGridSelected == GridSelection.TwoCrossThree) { Rows = 2; Cols = 3; }
+            if (GridSelectMenu.CurrentGridSelected == GridSelection.FiveCrossSix) { Rows = 5; Cols = 6; }
 
-            totalCards = rows * cols;
+            TotalCards = Rows * Cols;
 
-            Sprite[] CardShownSprites = allSprites.Where(s => !s.name.Contains("CardHidden")).ToArray();
+            Sprite[] CardShownSprites = AllSprites.Where(s => !s.name.Contains("CardHidden")).ToArray();
 
-            List<Sprite> cards = new List<Sprite>();
-            for (int i = 0; i < totalCards / 2; i++)
+            List<Sprite> Cards = new List<Sprite>();
+            for (int i = 0; i < TotalCards / 2; i++)
             {
-                Sprite sprite = CardShownSprites[Random.Range(0, CardShownSprites.Length)];
-                cards.Add(sprite);
-                cards.Add(sprite);
+                Sprite Sprite = CardShownSprites[Random.Range(0, CardShownSprites.Length)];
+                Cards.Add(Sprite);
+                Cards.Add(Sprite);
             }
 
             // Shuffle cards
-            cards = cards.OrderBy(x => Random.value).ToList();
+            Cards = Cards.OrderBy(x => Random.value).ToList();
 
-            PlaceCardsOnBoard(cards);
+            PlaceCardsOnBoard(Cards);
         }
         else 
         {
-            foreach (var item in data.CardsState)
+            foreach (var item in Data.CardsState)
             {
-                Card card = Instantiate(cardPrefab, transform);
-                card.transform.localPosition = item.CardLocation;
-                card.CardHidden = CardHidden;
-                card.CardShown = allSprites.FirstOrDefault(s => s.name.Contains(item.CardShownName));
-                card.CardFlipAnimDuration = CardFlipAnimDuration;
+                Card Card = Instantiate(CardPrefab, transform);
+                Card.transform.localPosition = item.CardLocation;
+                Card.CardHidden = CardHidden;
+                Card.CardShown = AllSprites.FirstOrDefault(s => s.name.Contains(item.CardShownName));
+                Card.CardFlipAnimDuration = CardFlipAnimDuration;
 
-                SpawnedCards.Add(card);
+                SpawnedCards.Add(Card);
             }
-            transform.localScale = new Vector3(data.CardSpawnerScaleX, data.CardSpawnerScaleY, 1);
+            transform.localScale = new Vector3(Data.CardSpawnerScaleX, Data.CardSpawnerScaleY, 1);
         }
     }
 
-    void PlaceCardsOnBoard(List<Sprite> cards)
+    void PlaceCardsOnBoard(List<Sprite> Cards)
     {
-       
-
         // Compute total grid size
-        float gridWidth = cols * (CardWidth + Spacing) - Spacing;
-        float gridHeight = rows * (CardHeight + Spacing) - Spacing;
+        float GridWidth = Cols * (CardWidth + Spacing) - Spacing;
+        float GridHeight = Rows * (CardHeight + Spacing) - Spacing;
 
         // Get screen dimensions in world space
-        float screenHeight = Camera.main.orthographicSize * 2f;
-        float screenWidth = screenHeight * Camera.main.aspect;
+        float ScreenHeight = Camera.main.orthographicSize * 2f;
+        float ScreenWidth = ScreenHeight * Camera.main.aspect;
 
-        float maxWidth = screenWidth * 0.8f;
-        float maxHeight = screenHeight * 0.8f;
+        float MaxWidth = ScreenWidth * 0.8f;
+        float MaxHeight = ScreenHeight * 0.8f;
 
         // Calculate scale factor to fit within screen
-        float scaleX = maxWidth / gridWidth;
-        float scaleY = maxHeight / gridHeight;
-        float scale = Mathf.Min(scaleX, scaleY, 1f); // Don't upscale too much
+        float ScaleX = MaxWidth / GridWidth;
+        float ScaleY = MaxHeight / GridHeight;
+        float Scale = Mathf.Min(ScaleX, ScaleY, 1f);
 
-        transform.localScale = new Vector3(scale, scale, 1f);
+        transform.localScale = new Vector3(Scale, Scale, 1f);
 
         // Compute top-left origin point of grid (relative to parent)
-        Vector2 origin = new Vector2(
-            -gridWidth / 2f + CardWidth / 2f,
-             gridHeight / 2f - CardHeight / 2f
+        Vector2 Origin = new Vector2(
+            -GridWidth / 2f + CardWidth / 2f,
+             GridHeight / 2f - CardHeight / 2f
         );
 
         // Spawn cards
-        for (int i = 0; i < totalCards; i++)
+        for (int i = 0; i < TotalCards; i++)
         {
-            int row = i / cols;
-            int col = i % cols;
+            int Row = i / Cols;
+            int Col = i % Cols;
 
-            Vector3 position = new Vector3(
-                origin.x + col * (CardWidth + Spacing),
-                origin.y - row * (CardHeight + Spacing),
-                0
-            );
+            Vector3 Position = GetCardPosition(Row, Col, Origin);
 
-            Card card = Instantiate(cardPrefab, transform);
-            card.transform.localPosition = position;
-            card.CardHidden = CardHidden;
-            card.CardShown = cards[i];
-            card.CardFlipAnimDuration = CardFlipAnimDuration;
-            SpawnedCards.Add(card);
+            Card Card = Instantiate(CardPrefab, transform);
+            Card.transform.localPosition = Position;
+            Card.CardHidden = CardHidden;
+            Card.CardShown = Cards[i];
+            Card.CardFlipAnimDuration = CardFlipAnimDuration;
+            SpawnedCards.Add(Card);
         }
+    }
+
+    private Vector3 GetCardPosition(int Row, int Col, Vector2 Origin)
+    {
+        return new Vector3(
+            Origin.x + Col * (CardWidth + Spacing),
+            Origin.y - Row * (CardHeight + Spacing),
+            0
+        );
     }
 }

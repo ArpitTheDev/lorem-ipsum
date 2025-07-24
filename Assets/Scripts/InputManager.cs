@@ -6,12 +6,12 @@ public class InputManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0)) 
         {
-            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
+            Vector2 MousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            RaycastHit2D Hit = Physics2D.Raycast(MousePos, Vector2.zero);
 
-            if (hit.collider != null)
+            if (Hit.collider != null)
             {
-                hit.collider.gameObject.GetComponent<Card>()?.OnCardClicked();
+                Hit.collider.gameObject.GetComponent<Card>()?.OnCardClicked();
             }
         }
     }

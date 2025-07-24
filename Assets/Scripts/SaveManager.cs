@@ -7,10 +7,10 @@ public static class SaveManager
 {
     private static string SavePath => Path.Combine(Application.persistentDataPath, "save.json");
 
-    public static void SaveGame(SaveData data)
+    public static void SaveGame(SaveData Data)
     {
-        string json = JsonUtility.ToJson(data, true);
-        File.WriteAllText(SavePath, json);
+        string Json = JsonUtility.ToJson(Data, true);
+        File.WriteAllText(SavePath, Json);
         Debug.Log("Game Saved to: " + SavePath);
     }
 
@@ -18,9 +18,9 @@ public static class SaveManager
     {
         if (File.Exists(SavePath))
         {
-            string json = File.ReadAllText(SavePath);
-            SaveData data = JsonUtility.FromJson<SaveData>(json);
-            return data;
+            string Json = File.ReadAllText(SavePath);
+            SaveData Data = JsonUtility.FromJson<SaveData>(Json);
+            return Data;
         }
 
         return null;

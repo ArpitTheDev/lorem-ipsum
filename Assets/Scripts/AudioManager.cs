@@ -1,23 +1,22 @@
 using UnityEngine;
+using static Unity.VisualScripting.Member;
 
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
-    public AudioClip flip, match, mismatch, gameOver;
-    private AudioSource source;
+    public AudioClip FlipAudio, MatchAudio, MismatchAudio, GameOverAudio;
+    private AudioSource Source;
 
     void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            source = GetComponent<AudioSource>();
-        }
-        else Destroy(gameObject);
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        Instance = this;
+        Source = GetComponent<AudioSource>();
+        DontDestroyOnLoad(gameObject);
     }
 
-    public void PlayFlip() => source.PlayOneShot(flip);
-    public void PlayMatch() => source.PlayOneShot(match);
-    public void PlayMismatch() => source.PlayOneShot(mismatch);
-    public void PlayGameOver() => source.PlayOneShot(gameOver);
+    public void PlayFlip() => Source.PlayOneShot(FlipAudio);
+    public void PlayMatch() => Source.PlayOneShot(MatchAudio);
+    public void PlayMismatch() => Source.PlayOneShot(MismatchAudio);
+    public void PlayGameOver() => Source.PlayOneShot(GameOverAudio);
 }

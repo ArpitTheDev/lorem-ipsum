@@ -552,10 +552,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f27269ee4c4906a4687078a999d231c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spriteAtlas: {fileID: 100100200, guid: 98283d67f21c6ea4bbe656820ae813c8, type: 3}
-  cardPrefab: {fileID: 9036975377432362924, guid: f9a76da513a29a34182275c5aca39e37, type: 3}
-  rows: 5
-  cols: 6
+  SpriteAtlas: {fileID: 100100200, guid: 98283d67f21c6ea4bbe656820ae813c8, type: 3}
+  CardPrefab: {fileID: 9036975377432362924, guid: f9a76da513a29a34182275c5aca39e37, type: 3}
+  Rows: 2
+  Cols: 2
   Spacing: 2
   CardFlipAnimDuration: 0.3
   SpawnedCards: []
@@ -1413,10 +1413,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7dc3791dfd1e772498ae2fc8fc2b89de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flip: {fileID: 8300000, guid: 2c5292ba5cf254919a6b9e2b18e04f49, type: 3}
-  match: {fileID: 8300000, guid: 2667a0a008b044e218b63df62e2be749, type: 3}
-  mismatch: {fileID: 8300000, guid: b9eff218e132a4e76be78840eca96fb2, type: 3}
-  gameOver: {fileID: 8300000, guid: 7bd6b897eb5ca4b7d88a205c4a51640c, type: 3}
+  FlipAudio: {fileID: 8300000, guid: 2c5292ba5cf254919a6b9e2b18e04f49, type: 3}
+  MatchAudio: {fileID: 8300000, guid: 2667a0a008b044e218b63df62e2be749, type: 3}
+  MismatchAudio: {fileID: 8300000, guid: b9eff218e132a4e76be78840eca96fb2, type: 3}
+  GameOverAudio: {fileID: 8300000, guid: 7bd6b897eb5ca4b7d88a205c4a51640c, type: 3}
 --- !u!82 &1427757779
 AudioSource:
   m_ObjectHideFlags: 0

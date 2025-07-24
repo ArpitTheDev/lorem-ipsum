@@ -40,13 +40,13 @@ public class GameManager : MonoBehaviour
 
     void SaveProgress()
     {
-        SaveData data = new SaveData
+        SaveData Data = new SaveData
         {
             Score = Score,
             MatchCounter = MatchCounter,
             MatchMultiplierCounter = MatchMultiplyerCounter,
-            Rows = CardSpawner.rows,
-            Cols = CardSpawner.cols,
+            Rows = CardSpawner.Rows,
+            Cols = CardSpawner.Cols,
             CardSpawnerScaleX = CardSpawner.transform.localScale.x,
             CardSpawnerScaleY = CardSpawner.transform.localScale.y,
             CardsState = new List<CardData>()
@@ -59,26 +59,26 @@ public class GameManager : MonoBehaviour
                 CardShownName = card.CardShown.name,
                 CardLocation = card.transform.localPosition
             };
-            data.CardsState.Add(cData);
+            Data.CardsState.Add(cData);
         }
 
-        SaveManager.SaveGame(data);
+        SaveManager.SaveGame(Data);
     }
 
     SaveData LoadProgress()
     {
-        SaveData data = SaveManager.LoadGame();
-        if (data == null)
+        SaveData Data = SaveManager.LoadGame();
+        if (Data == null)
             return null;
 
-        Score = data.Score;
+        Score = Data.Score;
         GamePlayUI.SetScoreText(Score);
-        MatchCounter = data.MatchCounter;
-        MatchMultiplyerCounter = data.MatchMultiplierCounter;
-        CardSpawner.rows = data.Rows;
-        CardSpawner.cols = data.Cols;
+        MatchCounter = Data.MatchCounter;
+        MatchMultiplyerCounter = Data.MatchMultiplierCounter;
+        CardSpawner.Rows = Data.Rows;
+        CardSpawner.Cols = Data.Cols;
 
-        return data;
+        return Data;
     }
 
     void OnEnable()
@@ -103,16 +103,16 @@ public class GameManager : MonoBehaviour
 
     void CheckMatch()
     {
-        Card first = CardQueue.Dequeue();
-        Card second = CardQueue.Dequeue();
+        Card First = CardQueue.Dequeue();
+        Card Second = CardQueue.Dequeue();
 
-        if (first.CardShown == second.CardShown)
+        if (First.CardShown == Second.CardShown)
         {
-            CardSpawner.SpawnedCards.Remove(first);
-            CardSpawner.SpawnedCards.Remove(second);
+            CardSpawner.SpawnedCards.Remove(First);
+            CardSpawner.SpawnedCards.Remove(Second);
 
-            Destroy(first.gameObject);
-            Destroy(second.gameObject);
+            Destroy(First.gameObject);
+            Destroy(Second.gameObject);
 
             MatchCounter++;
             MatchMultiplyerCounter++;
@@ -133,8 +133,8 @@ public class GameManager : MonoBehaviour
             MatchMultiplyerCounter = 0;
             AudioManager.Instance.PlayMismatch();
 
-            first.FlipBack();
-            second.FlipBack();
+            First.FlipBack();
+            Second.FlipBack();
         }
     }
 
